@@ -7,8 +7,10 @@ require("dotenv").config()
 const port = process.env.PORT||3000;
 
 
-
-const serviceAccount = require("./prime-deals--firebase-admin-key.json");
+//index.js
+const decoded = Buffer.from(process.env.FIREBASE_SERVICE_KEY, "base64").toString("utf8");
+const serviceAccount = JSON.parse(decoded);
+// const serviceAccount = require("./prime-deals--firebase-admin-key.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -59,7 +61,7 @@ async function run() {
         const bidCollection = db.collection('bids')
         const usersCollection = db.collection('users')
         //users api
-        app.post('/users',async(req,res)=>{
+        app.post('/users',verifyFirebaseToken,async(req,res)=>{
             const newUser = req.body;
             const email = req.body.email;
             const query = {email:email}
@@ -186,7 +188,7 @@ async function run() {
             res.send(result)
         })
 
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     
@@ -194,6 +196,8 @@ async function run() {
 }
 run().catch(console.dir);
 
-app.listen(port,()=>{
-    console.log(`smart deal server is running port : ${port}`)
-})
+module.exports = app;
+
+// app.listen(port,()=>{
+//     console.log(`smart deal server is running port : ${port}`)
+// })

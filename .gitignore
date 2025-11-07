@@ -1,3 +1,4 @@
 node_modules
 .env
 prime-deals--firebase-admin-key.json
+.vercel
